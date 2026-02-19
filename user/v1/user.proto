@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-option go_package = "./user/v1/user;userpb";
+option go_package = "./user/v1;userpb";
 
 
 service UserService {
-  rpc Register(RegisterRequest) returns (UserResponse);
+  rpc Registe(RegisterRequest) returns (UserResponse);
   rpc GetUser(GetUserRequest) returns (UserResponse);
   rpc UpdateUser(User) returns (UserResponse);
   rpc DeleteUser(GetUserRequest) returns (UserResponse);
