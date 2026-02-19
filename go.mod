@@ -1,4 +1,4 @@
-module github.com/gayratovoyatulloh/billiard-bot-proto
+module github.com/OyatullohGayratov771/billiard-bot-proto
 
 go 1.25.0
 
