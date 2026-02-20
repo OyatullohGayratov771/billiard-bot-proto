@@ -4,7 +4,7 @@ option go_package = "./user/v1;userpb";
 
 
 service UserService {
-  rpc Register(RegisterRequest) returns (UserResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc GetUser(GetUserRequest) returns (UserResponse);
   rpc UpdateUser(User) returns (UserResponse);
   rpc DeleteUser(GetUserRequest) returns (UserResponse);
@@ -16,6 +16,10 @@ message RegisterRequest {
   string username = 2;
   string first_name = 3;
   string last_name = 4;
+}
+
+message RegisterResponse {
+  User user = 1;
 }
 
 message GetUserRequest {
