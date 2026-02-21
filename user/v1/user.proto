@@ -2,50 +2,279 @@ syntax = "proto3";
 
 option go_package = "./user/v1;userpb";
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// ==================== USER SERVICE ====================
 
 service UserService {
+  // ===== BASIC CRUD =====
+  
+  // Register - Yangi foydalanuvchi ro'yxatdan o'tkazish (+ JWT token)
   rpc Register(RegisterRequest) returns (RegisterResponse);
-  rpc GetUser(GetUserRequest) returns (UserResponse);
-  rpc UpdateUser(User) returns (UserResponse);
-  rpc DeleteUser(GetUserRequest) returns (UserResponse);
+  
+  // GetUser - Foydalanuvchini ID orqali olish
+  rpc GetUser(GetUserRequest) returns (User);
+  
+  // GetUserByTelegramID - Telegram ID orqali foydalanuvchi topish
+  rpc GetUserByTelegramID(GetUserByTelegramIDRequest) returns (User);
+  
+  // UpdateUser - Foydalanuvchi ma'lumotlarini yangilash
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  
+  // DeleteUser - Foydalanuvchini o'chirish (soft delete)
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+  
+  // GetUsers - Foydalanuvchilar ro'yxati (pagination bilan)
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  
+  // ===== RATING & STATS =====
+  
+  // UpdateRating - Reytingni yangilash (match tugagandan keyin)
+  rpc UpdateRating(UpdateRatingRequest) returns (User);
+  
+  // GetLeaderboard - TOP o'yinchilar ro'yxati
+  rpc GetLeaderboard(GetLeaderboardRequest) returns (GetLeaderboardResponse);
+  
+  // GetUserStats - Foydalanuvchi statistikasi
+  rpc GetUserStats(GetUserRequest) returns (UserStats);
+  
+  // ===== AUTHENTICATION =====
+  
+  // ValidateToken - JWT token tekshirish
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  
+  // RefreshToken - Token yangilash
+  rpc RefreshToken(RefreshTokenRequest) returns (TokenResponse);
+  
+  // ===== ADMIN =====
+  
+  // CheckPermission - Foydalanuvchi ruxsatini tekshirish (RBAC)
+  rpc CheckPermission(CheckPermissionRequest) returns (CheckPermissionResponse);
+  
+  // MakeAdmin - Foydalanuvchini admin qilish
+  rpc MakeAdmin(MakeAdminRequest) returns (User);
 }
+
+// ==================== ENUMS ====================
+
+// Role - Foydalanuvchi rollari
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_USER = 1;        // Oddiy foydalanuvchi
+  ROLE_ADMIN = 2;       // Administrator
+  ROLE_SUPER_ADMIN = 3; // Super administrator
+}
+
+// Permission - Tizim ruxsatlari (RBAC uchun)
+enum Permission {
+  PERMISSION_UNSPECIFIED = 0;
+  
+  // User permissions (1-9)
+  PERMISSION_VIEW_TOURNAMENTS = 1;
+  PERMISSION_REGISTER_TOURNAMENT = 2;
+  PERMISSION_VIEW_PROFILE = 3;
+  
+  // Admin permissions (10-19)
+  PERMISSION_CREATE_TOURNAMENT = 10;
+  PERMISSION_UPDATE_TOURNAMENT = 11;
+  PERMISSION_DELETE_TOURNAMENT = 12;
+  PERMISSION_MANAGE_USERS = 13;
+  
+  // Super admin permissions (20+)
+  PERMISSION_MANAGE_ADMINS = 20;
+  PERMISSION_SYSTEM_SETTINGS = 21;
+}
+
+// ==================== MESSAGES ====================
+
+// User - Asosiy foydalanuvchi modeli
+message User {
+  int64 id = 1;                         // Unique ID
+  int64 telegram_id = 2;                // Telegram user ID
+  string username = 3;                  // Telegram username (@username)
+  string first_name = 4;                // Ism
+  string last_name = 5;                 // Familiya
+  string phone = 6;                     // Telefon raqami
+  
+  Role role = 7;                        // Foydalanuvchi roli
+  
+  // Stats
+  int32 rating = 8;                     // ELO rating (default: 1000)
+  int32 rating_peak = 9;                // Eng yuqori rating (all-time)
+  int32 games_played = 10;              // O'ynagan o'yinlar soni
+  int32 games_won = 11;                 // Yutgan o'yinlar
+  int32 games_lost = 12;                // Yutqazgan o'yinlar
+  int32 tournaments_played = 13;        // Turnirlar soni
+  int32 tournaments_won = 14;           // Yutgan turnirlar
+  int32 current_streak = 15;            // Hozirgi g'alaba seriyasi
+  int32 best_streak = 16;               // Eng yaxshi seriya
+  
+  bool is_active = 17;                  // Aktiv/deaktiv
+  
+  google.protobuf.Timestamp created_at = 18;
+  google.protobuf.Timestamp updated_at = 19;
+  google.protobuf.Timestamp last_seen_at = 20;
+}
+
+// UserStats - Batafsil statistika
+message UserStats {
+  int64 user_id = 1;
+  int32 rating = 2;
+  int32 rating_peak = 3;
+  int32 games_played = 4;
+  int32 games_won = 5;
+  int32 games_lost = 6;
+  double win_rate = 7;                  // Yutish foizi (0.0 - 1.0)
+  int32 tournaments_played = 8;
+  int32 tournaments_won = 9;
+  int32 current_streak = 10;
+  int32 best_streak = 11;
+}
+
+// LeaderboardEntry - Reytinglar ro'yxati elementi
+message LeaderboardEntry {
+  int32 rank = 1;                       // O'rin (1, 2, 3...)
+  User user = 2;                        // Foydalanuvchi ma'lumotlari
+  double win_rate = 3;                  // Yutish foizi
+}
+
+// ==================== REQUESTS & RESPONSES ====================
+
+// ===== REGISTER =====
 
 message RegisterRequest {
   int64 telegram_id = 1;
   string username = 2;
   string first_name = 3;
   string last_name = 4;
+  string phone = 5;                     // Optional
 }
 
 message RegisterResponse {
   User user = 1;
+  string token = 2;                     // JWT access token
+  string refresh_token = 3;             // Refresh token
+  google.protobuf.Timestamp expires_at = 4;
+  string message = 5;                   // "Welcome!" yoki "Welcome back!"
 }
+
+// ===== GET USER =====
 
 message GetUserRequest {
   int64 user_id = 1;
 }
 
-message User {
-  int64 id = 1;
-  int64 telegram_id = 2;
-  string username = 3;
-  string first_name = 4;
-  string last_name = 5;
-  string role = 6;
-  int32 rating = 7;
+message GetUserByTelegramIDRequest {
+  int64 telegram_id = 1;
 }
 
-message UserResponse {
-  User user = 1;
+// ===== UPDATE USER =====
+
+message UpdateUserRequest {
+  int64 user_id = 1;
+  
+  // Optional fields - faqat o'zgartiriladigan fieldlar
+  optional string first_name = 2;
+  optional string last_name = 3;
+  optional string phone = 4;
+  optional string username = 5;
 }
+
+// ===== DELETE USER =====
+
+message DeleteUserRequest {
+  int64 user_id = 1;
+  string reason = 2;                    // O'chirish sababi (audit log uchun)
+}
+
+// ===== GET USERS (LIST) =====
 
 message GetUsersRequest {
-  int32 page = 1;
-  int32 page_size = 2;
+  int32 page = 1;                       // Sahifa raqami (1 dan boshlanadi)
+  int32 page_size = 2;                  // Har sahifada nechta (default: 20)
+  optional Role role_filter = 3;        // Role bo'yicha filter
+  optional string search = 4;           // Username/name bo'yicha qidirish
 }
 
 message GetUsersResponse {
   repeated User users = 1;
+  int32 total = 2;                      // Jami foydalanuvchilar soni
+  int32 page = 3;                       // Hozirgi sahifa
+  int32 page_size = 4;                  // Sahifa hajmi
+  int32 total_pages = 5;                // Jami sahifalar
+}
+
+// ===== UPDATE RATING =====
+
+message UpdateRatingRequest {
+  int64 user_id = 1;
+  int32 rating_change = 2;              // +10 yoki -10
+  string reason = 3;                    // "Won match vs User#123"
+}
+
+// ===== LEADERBOARD =====
+
+message GetLeaderboardRequest {
+  int32 limit = 1;                      // TOP nechta (default: 10)
+  int32 offset = 2;                     // Pagination uchun
+}
+
+message GetLeaderboardResponse {
+  repeated LeaderboardEntry entries = 1;
   int32 total = 2;
+}
+
+// ===== JWT TOKEN =====
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  int64 user_id = 2;
+  int64 telegram_id = 3;
+  Role role = 4;
+  string error = 5;                     // Agar valid=false bo'lsa
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message TokenResponse {
+  string token = 1;
+  string refresh_token = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+// ===== PERMISSION CHECK =====
+
+message CheckPermissionRequest {
+  int64 user_id = 1;
+  Permission permission = 2;
+}
+
+message CheckPermissionResponse {
+  bool has_permission = 1;
+  string reason = 2;                    // Agar yo'q bo'lsa, sababi
+}
+
+// ===== MAKE ADMIN =====
+
+message MakeAdminRequest {
+  int64 user_id = 1;                    // Kimni admin qilish
+  int64 admin_id = 2;                   // Kim admin qilyapti
+  Role new_role = 3;                    // Yangi rol
+  string reason = 4;                    // Sabab (audit log)
+}
+
+// ==================== ERRORS ====================
+
+// ErrorResponse - Xatolik uchun (gRPC status details da)
+message ErrorResponse {
+  string code = 1;                      // "USER_NOT_FOUND", "INVALID_TOKEN"
+  string message = 2;                   // "User with ID 123 not found"
+  map<string, string> details = 3;      // Qo'shimcha ma'lumotlar
 }
