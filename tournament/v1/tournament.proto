@@ -1,0 +1,434 @@
+syntax = "proto3";
+
+option go_package = "./tournament/v1;tournamentpb";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// ==================== SERVICE DEFINITION ====================
+
+service TournamentService {
+  // ===== TOURNAMENT CRUD =====
+  
+  // CreateTournament creates a new tournament
+  rpc CreateTournament(CreateTournamentRequest) returns (Tournament);
+  
+  // GetTournament gets tournament by ID
+  rpc GetTournament(GetTournamentRequest) returns (Tournament);
+  
+  // UpdateTournament updates tournament details
+  rpc UpdateTournament(UpdateTournamentRequest) returns (Tournament);
+  
+  // DeleteTournament deletes tournament (soft delete)
+  rpc DeleteTournament(DeleteTournamentRequest) returns (google.protobuf.Empty);
+  
+  // GetTournaments lists tournaments with filters
+  rpc GetTournaments(GetTournamentsRequest) returns (GetTournamentsResponse);
+  
+  // ===== TOURNAMENT STATUS =====
+  
+  // StartTournament starts a tournament
+  rpc StartTournament(StartTournamentRequest) returns (Tournament);
+  
+  // EndTournament ends a tournament
+  rpc EndTournament(EndTournamentRequest) returns (Tournament);
+  
+  // CancelTournament cancels a tournament
+  rpc CancelTournament(CancelTournamentRequest) returns (Tournament);
+  
+  // ===== PARTICIPANT MANAGEMENT =====
+  
+  // RegisterParticipant registers a user for tournament
+  rpc RegisterParticipant(RegisterParticipantRequest) returns (Participant);
+  
+  // UnregisterParticipant removes user from tournament
+  rpc UnregisterParticipant(UnregisterParticipantRequest) returns (google.protobuf.Empty);
+  
+  // GetParticipants gets all participants of a tournament
+  rpc GetParticipants(GetParticipantsRequest) returns (GetParticipantsResponse);
+  
+  // GetUserTournaments gets tournaments user is registered for
+  rpc GetUserTournaments(GetUserTournamentsRequest) returns (GetTournamentsResponse);
+  
+  // ===== MATCH MANAGEMENT =====
+  
+  // CreateMatch creates a tournament match
+  rpc CreateMatch(CreateMatchRequest) returns (Match);
+  
+  // UpdateMatch updates match details
+  rpc UpdateMatch(UpdateMatchRequest) returns (Match);
+  
+  // ReportMatchResult reports match result
+  rpc ReportMatchResult(ReportMatchResultRequest) returns (Match);
+  
+  // GetMatches gets matches for a tournament
+  rpc GetMatches(GetMatchesRequest) returns (GetMatchesResponse);
+  
+  // GetUserMatches gets user's matches
+  rpc GetUserMatches(GetUserMatchesRequest) returns (GetMatchesResponse);
+  
+  // ===== BRACKET/DRAW =====
+  
+  // GenerateBracket generates tournament bracket
+  rpc GenerateBracket(GenerateBracketRequest) returns (Bracket);
+  
+  // GetBracket gets tournament bracket
+  rpc GetBracket(GetBracketRequest) returns (Bracket);
+  
+  // ===== STANDINGS =====
+  
+  // GetStandings gets tournament standings
+  rpc GetStandings(GetStandingsRequest) returns (GetStandingsResponse);
+  
+  // GetUserStanding gets user's standing in tournament
+  rpc GetUserStanding(GetUserStandingRequest) returns (Standing);
+}
+
+// ==================== ENUMS ====================
+
+// TournamentType represents tournament format
+enum TournamentType {
+  TOURNAMENT_TYPE_UNSPECIFIED = 0;
+  TOURNAMENT_TYPE_SINGLE_ELIMINATION = 1;  // Knockout
+  TOURNAMENT_TYPE_DOUBLE_ELIMINATION = 2;  // With losers bracket
+  TOURNAMENT_TYPE_ROUND_ROBIN = 3;         // Everyone plays everyone
+  TOURNAMENT_TYPE_SWISS = 4;               // Swiss system
+  TOURNAMENT_TYPE_LEAGUE = 5;              // Season-based
+}
+
+// TournamentStatus represents tournament state
+enum TournamentStatus {
+  TOURNAMENT_STATUS_UNSPECIFIED = 0;
+  TOURNAMENT_STATUS_DRAFT = 1;        // Being created
+  TOURNAMENT_STATUS_OPEN = 2;         // Registration open
+  TOURNAMENT_STATUS_FULL = 3;         // Registration full
+  TOURNAMENT_STATUS_CLOSED = 4;       // Registration closed
+  TOURNAMENT_STATUS_IN_PROGRESS = 5;  // Ongoing
+  TOURNAMENT_STATUS_COMPLETED = 6;    // Finished
+  TOURNAMENT_STATUS_CANCELLED = 7;    // Cancelled
+}
+
+// GameType represents billiard game type
+enum GameType {
+  GAME_TYPE_UNSPECIFIED = 0;
+  GAME_TYPE_8_BALL = 1;
+  GAME_TYPE_9_BALL = 2;
+  GAME_TYPE_SNOOKER = 3;
+  GAME_TYPE_STRAIGHT_POOL = 4;
+}
+
+// MatchStatus represents match state
+enum MatchStatus {
+  MATCH_STATUS_UNSPECIFIED = 0;
+  MATCH_STATUS_PENDING = 1;      // Not started
+  MATCH_STATUS_IN_PROGRESS = 2;  // Ongoing
+  MATCH_STATUS_COMPLETED = 3;    // Finished
+  MATCH_STATUS_CANCELLED = 4;    // Cancelled
+}
+
+// ParticipantStatus represents participant state
+enum ParticipantStatus {
+  PARTICIPANT_STATUS_UNSPECIFIED = 0;
+  PARTICIPANT_STATUS_REGISTERED = 1;   // Registered
+  PARTICIPANT_STATUS_CONFIRMED = 2;    // Confirmed attendance
+  PARTICIPANT_STATUS_CHECKED_IN = 3;   // Checked in
+  PARTICIPANT_STATUS_DISQUALIFIED = 4; // Disqualified
+  PARTICIPANT_STATUS_ELIMINATED = 5;   // Eliminated from tournament
+  PARTICIPANT_STATUS_WITHDRAWN = 6;    // Withdrew from tournament
+}
+
+// ==================== MESSAGES ====================
+
+// Tournament represents a tournament
+message Tournament {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  
+  TournamentType type = 4;
+  TournamentStatus status = 5;
+  GameType game_type = 6;
+  
+  int32 max_participants = 7;
+  int32 current_participants = 8;
+  int32 min_rating = 9;
+  int32 max_rating = 10;
+  
+  int32 prize_pool = 11;
+  string prize_currency = 12;
+  
+  int32 entry_fee = 13;
+  
+  string venue = 14;
+  string city = 15;
+  
+  bool is_online = 16;
+  bool is_private = 17;
+  
+  google.protobuf.Timestamp registration_start = 18;
+  google.protobuf.Timestamp registration_end = 19;
+  google.protobuf.Timestamp start_date = 20;
+  google.protobuf.Timestamp end_date = 21;
+  
+  int64 organizer_id = 22;
+  string organizer_name = 23;
+  
+  google.protobuf.Timestamp created_at = 24;
+  google.protobuf.Timestamp updated_at = 25;
+}
+
+// Participant represents a tournament participant
+message Participant {
+  int64 id = 1;
+  int64 tournament_id = 2;
+  int64 user_id = 3;
+  string username = 4;
+  string first_name = 5;
+  int32 rating = 6;
+  
+  ParticipantStatus status = 7;
+  int32 seed = 8;  // Seeding position
+  
+  google.protobuf.Timestamp registered_at = 9;
+  google.protobuf.Timestamp checked_in_at = 10;
+}
+
+// Match represents a tournament match
+message Match {
+  int64 id = 1;
+  int64 tournament_id = 2;
+  
+  int32 round = 3;         // Round number
+  int32 match_number = 4;  // Match number in round
+  
+  int64 player1_id = 5;
+  string player1_name = 6;
+  int32 player1_score = 7;
+  
+  int64 player2_id = 8;
+  string player2_name = 9;
+  int32 player2_score = 10;
+  
+  int64 winner_id = 11;
+  
+  MatchStatus status = 12;
+  
+  string table_number = 13;
+  
+  google.protobuf.Timestamp scheduled_at = 14;
+  google.protobuf.Timestamp started_at = 15;
+  google.protobuf.Timestamp completed_at = 16;
+  
+  google.protobuf.Timestamp created_at = 17;
+}
+
+// Bracket represents tournament bracket
+message Bracket {
+  int64 tournament_id = 1;
+  repeated BracketRound rounds = 2;
+  int32 total_rounds = 3;
+}
+
+// BracketRound represents a round in bracket
+message BracketRound {
+  int32 round_number = 1;
+  string round_name = 2;  // "Round of 16", "Quarter Finals", etc.
+  repeated Match matches = 3;
+}
+
+// Standing represents participant standing
+message Standing {
+  int32 position = 1;
+  int64 user_id = 2;
+  string username = 3;
+  string first_name = 4;
+  
+  int32 matches_played = 5;
+  int32 matches_won = 6;
+  int32 matches_lost = 7;
+  int32 points = 8;
+  
+  int32 rating_before = 9;
+  int32 rating_after = 10;
+  int32 rating_change = 11;
+}
+
+// ==================== REQUESTS & RESPONSES ====================
+
+// CreateTournament
+message CreateTournamentRequest {
+  string name = 1;
+  string description = 2;
+  TournamentType type = 3;
+  GameType game_type = 4;
+  int32 max_participants = 5;
+  int32 min_rating = 6;
+  int32 max_rating = 7;
+  int32 prize_pool = 8;
+  string prize_currency = 9;
+  int32 entry_fee = 10;
+  string venue = 11;
+  string city = 12;
+  bool is_online = 13;
+  bool is_private = 14;
+  google.protobuf.Timestamp registration_start = 15;
+  google.protobuf.Timestamp registration_end = 16;
+  google.protobuf.Timestamp start_date = 17;
+  int64 organizer_id = 18;
+}
+
+// GetTournament
+message GetTournamentRequest {
+  int64 tournament_id = 1;
+}
+
+// UpdateTournament
+message UpdateTournamentRequest {
+  int64 tournament_id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional int32 max_participants = 4;
+  optional int32 prize_pool = 5;
+  optional string venue = 6;
+}
+
+// DeleteTournament
+message DeleteTournamentRequest {
+  int64 tournament_id = 1;
+  string reason = 2;
+}
+
+// GetTournaments
+message GetTournamentsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  optional TournamentStatus status = 3;
+  optional GameType game_type = 4;
+  optional bool is_online = 5;
+  optional string city = 6;
+}
+
+message GetTournamentsResponse {
+  repeated Tournament tournaments = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+  int32 total_pages = 5;
+}
+
+// StartTournament
+message StartTournamentRequest {
+  int64 tournament_id = 1;
+  int64 admin_id = 2;
+}
+
+// EndTournament
+message EndTournamentRequest {
+  int64 tournament_id = 1;
+  int64 admin_id = 2;
+}
+
+// CancelTournament
+message CancelTournamentRequest {
+  int64 tournament_id = 1;
+  int64 admin_id = 2;
+  string reason = 3;
+}
+
+// RegisterParticipant
+message RegisterParticipantRequest {
+  int64 tournament_id = 1;
+  int64 user_id = 2;
+}
+
+// UnregisterParticipant
+message UnregisterParticipantRequest {
+  int64 tournament_id = 1;
+  int64 user_id = 2;
+}
+
+// GetParticipants
+message GetParticipantsRequest {
+  int64 tournament_id = 1;
+}
+
+message GetParticipantsResponse {
+  repeated Participant participants = 1;
+  int32 total = 2;
+}
+
+// GetUserTournaments
+message GetUserTournamentsRequest {
+  int64 user_id = 1;
+  optional TournamentStatus status = 2;
+}
+
+// CreateMatch
+message CreateMatchRequest {
+  int64 tournament_id = 1;
+  int32 round = 2;
+  int32 match_number = 3;
+  int64 player1_id = 4;
+  int64 player2_id = 5;
+  optional google.protobuf.Timestamp scheduled_at = 6;
+  optional string table_number = 7;
+}
+
+// UpdateMatch
+message UpdateMatchRequest {
+  int64 match_id = 1;
+  optional google.protobuf.Timestamp scheduled_at = 2;
+  optional string table_number = 3;
+}
+
+// ReportMatchResult
+message ReportMatchResultRequest {
+  int64 match_id = 1;
+  int32 player1_score = 2;
+  int32 player2_score = 3;
+  int64 reported_by = 4;
+}
+
+// GetMatches
+message GetMatchesRequest {
+  int64 tournament_id = 1;
+  optional int32 round = 2;
+}
+
+message GetMatchesResponse {
+  repeated Match matches = 1;
+  int32 total = 2;
+}
+
+// GetUserMatches
+message GetUserMatchesRequest {
+  int64 user_id = 1;
+  int64 tournament_id = 2;
+}
+
+// GenerateBracket
+message GenerateBracketRequest {
+  int64 tournament_id = 1;
+  int64 admin_id = 2;
+}
+
+// GetBracket
+message GetBracketRequest {
+  int64 tournament_id = 1;
+}
+
+// GetStandings
+message GetStandingsRequest {
+  int64 tournament_id = 1;
+}
+
+message GetStandingsResponse {
+  repeated Standing standings = 1;
+  int32 total = 2;
+}
+
+// GetUserStanding
+message GetUserStandingRequest {
+  int64 tournament_id = 1;
+  int64 user_id = 2;
+}

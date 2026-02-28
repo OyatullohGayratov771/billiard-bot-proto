@@ -111,6 +111,7 @@ message User {
   int32 best_streak = 16;               // Eng yaxshi seriya
   
   bool is_active = 17;                  // Aktiv/deaktiv
+  int64 branch_id = 21;                 // Branch ID (fillial)
   
   google.protobuf.Timestamp created_at = 18;
   google.protobuf.Timestamp updated_at = 19;
