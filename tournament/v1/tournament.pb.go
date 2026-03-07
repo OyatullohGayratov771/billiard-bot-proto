@@ -1101,21 +1101,22 @@ type CreateTournamentRequest struct {
 	Name              string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Description       string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	Type              TournamentType         `protobuf:"varint,3,opt,name=type,proto3,enum=TournamentType" json:"type,omitempty"`
-	GameType          GameType               `protobuf:"varint,4,opt,name=game_type,json=gameType,proto3,enum=GameType" json:"game_type,omitempty"`
-	MaxParticipants   int32                  `protobuf:"varint,5,opt,name=max_participants,json=maxParticipants,proto3" json:"max_participants,omitempty"`
-	MinRating         int32                  `protobuf:"varint,6,opt,name=min_rating,json=minRating,proto3" json:"min_rating,omitempty"`
-	MaxRating         int32                  `protobuf:"varint,7,opt,name=max_rating,json=maxRating,proto3" json:"max_rating,omitempty"`
-	PrizePool         int32                  `protobuf:"varint,8,opt,name=prize_pool,json=prizePool,proto3" json:"prize_pool,omitempty"`
-	PrizeCurrency     string                 `protobuf:"bytes,9,opt,name=prize_currency,json=prizeCurrency,proto3" json:"prize_currency,omitempty"`
-	EntryFee          int32                  `protobuf:"varint,10,opt,name=entry_fee,json=entryFee,proto3" json:"entry_fee,omitempty"`
-	Venue             string                 `protobuf:"bytes,11,opt,name=venue,proto3" json:"venue,omitempty"`
-	City              string                 `protobuf:"bytes,12,opt,name=city,proto3" json:"city,omitempty"`
-	IsOnline          bool                   `protobuf:"varint,13,opt,name=is_online,json=isOnline,proto3" json:"is_online,omitempty"`
-	IsPrivate         bool                   `protobuf:"varint,14,opt,name=is_private,json=isPrivate,proto3" json:"is_private,omitempty"`
-	RegistrationStart *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=registration_start,json=registrationStart,proto3" json:"registration_start,omitempty"`
-	RegistrationEnd   *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=registration_end,json=registrationEnd,proto3" json:"registration_end,omitempty"`
-	StartDate         *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
-	OrganizerId       int64                  `protobuf:"varint,18,opt,name=organizer_id,json=organizerId,proto3" json:"organizer_id,omitempty"`
+	Status            TournamentStatus       `protobuf:"varint,4,opt,name=status,proto3,enum=TournamentStatus" json:"status,omitempty"`
+	GameType          GameType               `protobuf:"varint,5,opt,name=game_type,json=gameType,proto3,enum=GameType" json:"game_type,omitempty"`
+	MaxParticipants   int32                  `protobuf:"varint,6,opt,name=max_participants,json=maxParticipants,proto3" json:"max_participants,omitempty"`
+	MinRating         int32                  `protobuf:"varint,7,opt,name=min_rating,json=minRating,proto3" json:"min_rating,omitempty"`
+	MaxRating         int32                  `protobuf:"varint,8,opt,name=max_rating,json=maxRating,proto3" json:"max_rating,omitempty"`
+	PrizePool         int32                  `protobuf:"varint,9,opt,name=prize_pool,json=prizePool,proto3" json:"prize_pool,omitempty"`
+	PrizeCurrency     string                 `protobuf:"bytes,10,opt,name=prize_currency,json=prizeCurrency,proto3" json:"prize_currency,omitempty"`
+	EntryFee          int32                  `protobuf:"varint,11,opt,name=entry_fee,json=entryFee,proto3" json:"entry_fee,omitempty"`
+	Venue             string                 `protobuf:"bytes,12,opt,name=venue,proto3" json:"venue,omitempty"`
+	City              string                 `protobuf:"bytes,13,opt,name=city,proto3" json:"city,omitempty"`
+	IsOnline          bool                   `protobuf:"varint,14,opt,name=is_online,json=isOnline,proto3" json:"is_online,omitempty"`
+	IsPrivate         bool                   `protobuf:"varint,15,opt,name=is_private,json=isPrivate,proto3" json:"is_private,omitempty"`
+	RegistrationStart *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=registration_start,json=registrationStart,proto3" json:"registration_start,omitempty"`
+	RegistrationEnd   *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=registration_end,json=registrationEnd,proto3" json:"registration_end,omitempty"`
+	StartDate         *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	OrganizerId       int64                  `protobuf:"varint,19,opt,name=organizer_id,json=organizerId,proto3" json:"organizer_id,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -1169,6 +1170,13 @@ func (x *CreateTournamentRequest) GetType() TournamentType {
 		return x.Type
 	}
 	return TournamentType_TOURNAMENT_TYPE_UNSPECIFIED
+}
+
+func (x *CreateTournamentRequest) GetStatus() TournamentStatus {
+	if x != nil {
+		return x.Status
+	}
+	return TournamentStatus_TOURNAMENT_STATUS_UNSPECIFIED
 }
 
 func (x *CreateTournamentRequest) GetGameType() GameType {
@@ -2771,32 +2779,33 @@ const file_tournament_v1_tournament_proto_rawDesc = "" +
 	"\rrating_before\x18\t \x01(\x05R\fratingBefore\x12!\n" +
 	"\frating_after\x18\n" +
 	" \x01(\x05R\vratingAfter\x12#\n" +
-	"\rrating_change\x18\v \x01(\x05R\fratingChange\"\xbe\x05\n" +
+	"\rrating_change\x18\v \x01(\x05R\fratingChange\"\xe9\x05\n" +
 	"\x17CreateTournamentRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12#\n" +
-	"\x04type\x18\x03 \x01(\x0e2\x0f.TournamentTypeR\x04type\x12&\n" +
-	"\tgame_type\x18\x04 \x01(\x0e2\t.GameTypeR\bgameType\x12)\n" +
-	"\x10max_participants\x18\x05 \x01(\x05R\x0fmaxParticipants\x12\x1d\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x0f.TournamentTypeR\x04type\x12)\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x11.TournamentStatusR\x06status\x12&\n" +
+	"\tgame_type\x18\x05 \x01(\x0e2\t.GameTypeR\bgameType\x12)\n" +
+	"\x10max_participants\x18\x06 \x01(\x05R\x0fmaxParticipants\x12\x1d\n" +
 	"\n" +
-	"min_rating\x18\x06 \x01(\x05R\tminRating\x12\x1d\n" +
+	"min_rating\x18\a \x01(\x05R\tminRating\x12\x1d\n" +
 	"\n" +
-	"max_rating\x18\a \x01(\x05R\tmaxRating\x12\x1d\n" +
+	"max_rating\x18\b \x01(\x05R\tmaxRating\x12\x1d\n" +
 	"\n" +
-	"prize_pool\x18\b \x01(\x05R\tprizePool\x12%\n" +
-	"\x0eprize_currency\x18\t \x01(\tR\rprizeCurrency\x12\x1b\n" +
-	"\tentry_fee\x18\n" +
-	" \x01(\x05R\bentryFee\x12\x14\n" +
-	"\x05venue\x18\v \x01(\tR\x05venue\x12\x12\n" +
-	"\x04city\x18\f \x01(\tR\x04city\x12\x1b\n" +
-	"\tis_online\x18\r \x01(\bR\bisOnline\x12\x1d\n" +
+	"prize_pool\x18\t \x01(\x05R\tprizePool\x12%\n" +
+	"\x0eprize_currency\x18\n" +
+	" \x01(\tR\rprizeCurrency\x12\x1b\n" +
+	"\tentry_fee\x18\v \x01(\x05R\bentryFee\x12\x14\n" +
+	"\x05venue\x18\f \x01(\tR\x05venue\x12\x12\n" +
+	"\x04city\x18\r \x01(\tR\x04city\x12\x1b\n" +
+	"\tis_online\x18\x0e \x01(\bR\bisOnline\x12\x1d\n" +
 	"\n" +
-	"is_private\x18\x0e \x01(\bR\tisPrivate\x12I\n" +
-	"\x12registration_start\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\x11registrationStart\x12E\n" +
-	"\x10registration_end\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\x0fregistrationEnd\x129\n" +
+	"is_private\x18\x0f \x01(\bR\tisPrivate\x12I\n" +
+	"\x12registration_start\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\x11registrationStart\x12E\n" +
+	"\x10registration_end\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\x0fregistrationEnd\x129\n" +
 	"\n" +
-	"start_date\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\tstartDate\x12!\n" +
-	"\forganizer_id\x18\x12 \x01(\x03R\vorganizerId\";\n" +
+	"start_date\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampR\tstartDate\x12!\n" +
+	"\forganizer_id\x18\x13 \x01(\x03R\vorganizerId\";\n" +
 	"\x14GetTournamentRequest\x12#\n" +
 	"\rtournament_id\x18\x01 \x01(\x03R\ftournamentId\"\xb4\x02\n" +
 	"\x17UpdateTournamentRequest\x12#\n" +
@@ -3043,66 +3052,67 @@ var file_tournament_v1_tournament_proto_depIdxs = []int32{
 	9,  // 17: Bracket.rounds:type_name -> BracketRound
 	7,  // 18: BracketRound.matches:type_name -> Match
 	0,  // 19: CreateTournamentRequest.type:type_name -> TournamentType
-	2,  // 20: CreateTournamentRequest.game_type:type_name -> GameType
-	36, // 21: CreateTournamentRequest.registration_start:type_name -> google.protobuf.Timestamp
-	36, // 22: CreateTournamentRequest.registration_end:type_name -> google.protobuf.Timestamp
-	36, // 23: CreateTournamentRequest.start_date:type_name -> google.protobuf.Timestamp
-	1,  // 24: GetTournamentsRequest.status:type_name -> TournamentStatus
-	2,  // 25: GetTournamentsRequest.game_type:type_name -> GameType
-	5,  // 26: GetTournamentsResponse.tournaments:type_name -> Tournament
-	6,  // 27: GetParticipantsResponse.participants:type_name -> Participant
-	1,  // 28: GetUserTournamentsRequest.status:type_name -> TournamentStatus
-	36, // 29: CreateMatchRequest.scheduled_at:type_name -> google.protobuf.Timestamp
-	36, // 30: UpdateMatchRequest.scheduled_at:type_name -> google.protobuf.Timestamp
-	7,  // 31: GetMatchesResponse.matches:type_name -> Match
-	10, // 32: GetStandingsResponse.standings:type_name -> Standing
-	11, // 33: TournamentService.CreateTournament:input_type -> CreateTournamentRequest
-	12, // 34: TournamentService.GetTournament:input_type -> GetTournamentRequest
-	13, // 35: TournamentService.UpdateTournament:input_type -> UpdateTournamentRequest
-	14, // 36: TournamentService.DeleteTournament:input_type -> DeleteTournamentRequest
-	15, // 37: TournamentService.GetTournaments:input_type -> GetTournamentsRequest
-	17, // 38: TournamentService.StartTournament:input_type -> StartTournamentRequest
-	18, // 39: TournamentService.EndTournament:input_type -> EndTournamentRequest
-	19, // 40: TournamentService.CancelTournament:input_type -> CancelTournamentRequest
-	20, // 41: TournamentService.RegisterParticipant:input_type -> RegisterParticipantRequest
-	21, // 42: TournamentService.UnregisterParticipant:input_type -> UnregisterParticipantRequest
-	22, // 43: TournamentService.GetParticipants:input_type -> GetParticipantsRequest
-	24, // 44: TournamentService.GetUserTournaments:input_type -> GetUserTournamentsRequest
-	25, // 45: TournamentService.CreateMatch:input_type -> CreateMatchRequest
-	26, // 46: TournamentService.UpdateMatch:input_type -> UpdateMatchRequest
-	27, // 47: TournamentService.ReportMatchResult:input_type -> ReportMatchResultRequest
-	28, // 48: TournamentService.GetMatches:input_type -> GetMatchesRequest
-	30, // 49: TournamentService.GetUserMatches:input_type -> GetUserMatchesRequest
-	31, // 50: TournamentService.GenerateBracket:input_type -> GenerateBracketRequest
-	32, // 51: TournamentService.GetBracket:input_type -> GetBracketRequest
-	33, // 52: TournamentService.GetStandings:input_type -> GetStandingsRequest
-	35, // 53: TournamentService.GetUserStanding:input_type -> GetUserStandingRequest
-	5,  // 54: TournamentService.CreateTournament:output_type -> Tournament
-	5,  // 55: TournamentService.GetTournament:output_type -> Tournament
-	5,  // 56: TournamentService.UpdateTournament:output_type -> Tournament
-	37, // 57: TournamentService.DeleteTournament:output_type -> google.protobuf.Empty
-	16, // 58: TournamentService.GetTournaments:output_type -> GetTournamentsResponse
-	5,  // 59: TournamentService.StartTournament:output_type -> Tournament
-	5,  // 60: TournamentService.EndTournament:output_type -> Tournament
-	5,  // 61: TournamentService.CancelTournament:output_type -> Tournament
-	6,  // 62: TournamentService.RegisterParticipant:output_type -> Participant
-	37, // 63: TournamentService.UnregisterParticipant:output_type -> google.protobuf.Empty
-	23, // 64: TournamentService.GetParticipants:output_type -> GetParticipantsResponse
-	16, // 65: TournamentService.GetUserTournaments:output_type -> GetTournamentsResponse
-	7,  // 66: TournamentService.CreateMatch:output_type -> Match
-	7,  // 67: TournamentService.UpdateMatch:output_type -> Match
-	7,  // 68: TournamentService.ReportMatchResult:output_type -> Match
-	29, // 69: TournamentService.GetMatches:output_type -> GetMatchesResponse
-	29, // 70: TournamentService.GetUserMatches:output_type -> GetMatchesResponse
-	8,  // 71: TournamentService.GenerateBracket:output_type -> Bracket
-	8,  // 72: TournamentService.GetBracket:output_type -> Bracket
-	34, // 73: TournamentService.GetStandings:output_type -> GetStandingsResponse
-	10, // 74: TournamentService.GetUserStanding:output_type -> Standing
-	54, // [54:75] is the sub-list for method output_type
-	33, // [33:54] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	1,  // 20: CreateTournamentRequest.status:type_name -> TournamentStatus
+	2,  // 21: CreateTournamentRequest.game_type:type_name -> GameType
+	36, // 22: CreateTournamentRequest.registration_start:type_name -> google.protobuf.Timestamp
+	36, // 23: CreateTournamentRequest.registration_end:type_name -> google.protobuf.Timestamp
+	36, // 24: CreateTournamentRequest.start_date:type_name -> google.protobuf.Timestamp
+	1,  // 25: GetTournamentsRequest.status:type_name -> TournamentStatus
+	2,  // 26: GetTournamentsRequest.game_type:type_name -> GameType
+	5,  // 27: GetTournamentsResponse.tournaments:type_name -> Tournament
+	6,  // 28: GetParticipantsResponse.participants:type_name -> Participant
+	1,  // 29: GetUserTournamentsRequest.status:type_name -> TournamentStatus
+	36, // 30: CreateMatchRequest.scheduled_at:type_name -> google.protobuf.Timestamp
+	36, // 31: UpdateMatchRequest.scheduled_at:type_name -> google.protobuf.Timestamp
+	7,  // 32: GetMatchesResponse.matches:type_name -> Match
+	10, // 33: GetStandingsResponse.standings:type_name -> Standing
+	11, // 34: TournamentService.CreateTournament:input_type -> CreateTournamentRequest
+	12, // 35: TournamentService.GetTournament:input_type -> GetTournamentRequest
+	13, // 36: TournamentService.UpdateTournament:input_type -> UpdateTournamentRequest
+	14, // 37: TournamentService.DeleteTournament:input_type -> DeleteTournamentRequest
+	15, // 38: TournamentService.GetTournaments:input_type -> GetTournamentsRequest
+	17, // 39: TournamentService.StartTournament:input_type -> StartTournamentRequest
+	18, // 40: TournamentService.EndTournament:input_type -> EndTournamentRequest
+	19, // 41: TournamentService.CancelTournament:input_type -> CancelTournamentRequest
+	20, // 42: TournamentService.RegisterParticipant:input_type -> RegisterParticipantRequest
+	21, // 43: TournamentService.UnregisterParticipant:input_type -> UnregisterParticipantRequest
+	22, // 44: TournamentService.GetParticipants:input_type -> GetParticipantsRequest
+	24, // 45: TournamentService.GetUserTournaments:input_type -> GetUserTournamentsRequest
+	25, // 46: TournamentService.CreateMatch:input_type -> CreateMatchRequest
+	26, // 47: TournamentService.UpdateMatch:input_type -> UpdateMatchRequest
+	27, // 48: TournamentService.ReportMatchResult:input_type -> ReportMatchResultRequest
+	28, // 49: TournamentService.GetMatches:input_type -> GetMatchesRequest
+	30, // 50: TournamentService.GetUserMatches:input_type -> GetUserMatchesRequest
+	31, // 51: TournamentService.GenerateBracket:input_type -> GenerateBracketRequest
+	32, // 52: TournamentService.GetBracket:input_type -> GetBracketRequest
+	33, // 53: TournamentService.GetStandings:input_type -> GetStandingsRequest
+	35, // 54: TournamentService.GetUserStanding:input_type -> GetUserStandingRequest
+	5,  // 55: TournamentService.CreateTournament:output_type -> Tournament
+	5,  // 56: TournamentService.GetTournament:output_type -> Tournament
+	5,  // 57: TournamentService.UpdateTournament:output_type -> Tournament
+	37, // 58: TournamentService.DeleteTournament:output_type -> google.protobuf.Empty
+	16, // 59: TournamentService.GetTournaments:output_type -> GetTournamentsResponse
+	5,  // 60: TournamentService.StartTournament:output_type -> Tournament
+	5,  // 61: TournamentService.EndTournament:output_type -> Tournament
+	5,  // 62: TournamentService.CancelTournament:output_type -> Tournament
+	6,  // 63: TournamentService.RegisterParticipant:output_type -> Participant
+	37, // 64: TournamentService.UnregisterParticipant:output_type -> google.protobuf.Empty
+	23, // 65: TournamentService.GetParticipants:output_type -> GetParticipantsResponse
+	16, // 66: TournamentService.GetUserTournaments:output_type -> GetTournamentsResponse
+	7,  // 67: TournamentService.CreateMatch:output_type -> Match
+	7,  // 68: TournamentService.UpdateMatch:output_type -> Match
+	7,  // 69: TournamentService.ReportMatchResult:output_type -> Match
+	29, // 70: TournamentService.GetMatches:output_type -> GetMatchesResponse
+	29, // 71: TournamentService.GetUserMatches:output_type -> GetMatchesResponse
+	8,  // 72: TournamentService.GenerateBracket:output_type -> Bracket
+	8,  // 73: TournamentService.GetBracket:output_type -> Bracket
+	34, // 74: TournamentService.GetStandings:output_type -> GetStandingsResponse
+	10, // 75: TournamentService.GetUserStanding:output_type -> Standing
+	55, // [55:76] is the sub-list for method output_type
+	34, // [34:55] is the sub-list for method input_type
+	34, // [34:34] is the sub-list for extension type_name
+	34, // [34:34] is the sub-list for extension extendee
+	0,  // [0:34] is the sub-list for field type_name
 }
 
 func init() { file_tournament_v1_tournament_proto_init() }
